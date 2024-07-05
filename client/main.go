@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	proto "yadro-dns/gen/go/proto"
+	"yadro-dns/gen/go/proto"
 )
 
 func main() {
@@ -27,9 +27,9 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Echo(ctx, &proto.StringMessage{Value: "Echo this!"})
+	r, err := c.GetHostname(ctx, &proto.GetHostnameParams{})
 	if err != nil {
 		log.Fatalf("could not echo: %v", err)
 	}
-	log.Printf("Recieved back: %s", r.GetValue())
+	log.Printf("Recieved back: %s", r.GetName())
 }

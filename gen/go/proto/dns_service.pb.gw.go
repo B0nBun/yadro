@@ -2,11 +2,11 @@
 // source: dns_service.proto
 
 /*
-Package dns_service is a reverse proxy.
+Package proto is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package dns_service
+package proto
 
 import (
 	"context"
@@ -32,37 +32,55 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_DnsService_Echo_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_DnsService_SetHostname_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_DnsService_Echo_0(ctx context.Context, marshaler runtime.Marshaler, client DnsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq StringMessage
+func request_DnsService_SetHostname_0(ctx context.Context, marshaler runtime.Marshaler, client DnsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq Hostname
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_Echo_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_SetHostname_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.Echo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.SetHostname(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_DnsService_Echo_0(ctx context.Context, marshaler runtime.Marshaler, server DnsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq StringMessage
+func local_request_DnsService_SetHostname_0(ctx context.Context, marshaler runtime.Marshaler, server DnsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq Hostname
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_Echo_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_SetHostname_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.Echo(ctx, &protoReq)
+	msg, err := server.SetHostname(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_DnsService_GetHostname_0(ctx context.Context, marshaler runtime.Marshaler, client DnsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetHostnameParams
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.GetHostname(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_DnsService_GetHostname_0(ctx context.Context, marshaler runtime.Marshaler, server DnsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetHostnameParams
+	var metadata runtime.ServerMetadata
+
+	msg, err := server.GetHostname(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -73,7 +91,7 @@ func local_request_DnsService_Echo_0(ctx context.Context, marshaler runtime.Mars
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterDnsServiceHandlerFromEndpoint instead.
 func RegisterDnsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server DnsServiceServer) error {
 
-	mux.Handle("GET", pattern_DnsService_Echo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DnsService_SetHostname_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -81,12 +99,12 @@ func RegisterDnsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/dns_service.DnsService/Echo", runtime.WithHTTPPathPattern("/api/echo"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/dns_service.DnsService/SetHostname", runtime.WithHTTPPathPattern("/api/hostname"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DnsService_Echo_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DnsService_SetHostname_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -94,7 +112,32 @@ func RegisterDnsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_DnsService_Echo_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DnsService_SetHostname_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_DnsService_GetHostname_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/dns_service.DnsService/GetHostname", runtime.WithHTTPPathPattern("/api/hostname"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_DnsService_GetHostname_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_DnsService_GetHostname_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -139,25 +182,47 @@ func RegisterDnsServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn 
 // "DnsServiceClient" to call the correct interceptors.
 func RegisterDnsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client DnsServiceClient) error {
 
-	mux.Handle("GET", pattern_DnsService_Echo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DnsService_SetHostname_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/dns_service.DnsService/Echo", runtime.WithHTTPPathPattern("/api/echo"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/dns_service.DnsService/SetHostname", runtime.WithHTTPPathPattern("/api/hostname"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DnsService_Echo_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DnsService_SetHostname_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DnsService_Echo_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DnsService_SetHostname_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_DnsService_GetHostname_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/dns_service.DnsService/GetHostname", runtime.WithHTTPPathPattern("/api/hostname"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_DnsService_GetHostname_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_DnsService_GetHostname_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -165,9 +230,13 @@ func RegisterDnsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_DnsService_Echo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "echo"}, ""))
+	pattern_DnsService_SetHostname_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "hostname"}, ""))
+
+	pattern_DnsService_GetHostname_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "hostname"}, ""))
 )
 
 var (
-	forward_DnsService_Echo_0 = runtime.ForwardResponseMessage
+	forward_DnsService_SetHostname_0 = runtime.ForwardResponseMessage
+
+	forward_DnsService_GetHostname_0 = runtime.ForwardResponseMessage
 )

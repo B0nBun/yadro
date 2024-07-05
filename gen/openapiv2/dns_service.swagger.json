@@ -16,16 +16,38 @@
     "application/json"
   ],
   "paths": {
-    "/api/echo": {
+    "/api/hostname": {
       "get": {
-        "summary": "Echo the message",
-        "description": "Repeat the message back in the response",
-        "operationId": "DnsService_Echo",
+        "summary": "Get the hostname from the server",
+        "description": "Gets the server's hostname via a `hostnamectl` command",
+        "operationId": "DnsService_GetHostname",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dns_serviceStringMessage"
+              "$ref": "#/definitions/dns_serviceHostname"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DnsService"
+        ]
+      },
+      "post": {
+        "summary": "Set the hostname on the server",
+        "description": "Changes the server's hostname via a `hostnamectl` command. Returns the new hostname if successfull",
+        "operationId": "DnsService_SetHostname",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dns_serviceHostname"
             }
           },
           "default": {
@@ -37,7 +59,7 @@
         },
         "parameters": [
           {
-            "name": "value",
+            "name": "name",
             "in": "query",
             "required": false,
             "type": "string"
@@ -50,10 +72,10 @@
     }
   },
   "definitions": {
-    "dns_serviceStringMessage": {
+    "dns_serviceHostname": {
       "type": "object",
       "properties": {
-        "value": {
+        "name": {
           "type": "string"
         }
       }
