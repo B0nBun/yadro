@@ -1,0 +1,22 @@
+syntax = "proto3";
+package dns_service;
+option go_package = "yadro-dns/gen/go/dns_service";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+message StringMessage {
+    string value = 1;
+}
+
+service DnsService {
+    rpc Echo(StringMessage) returns (StringMessage) {
+        option (google.api.http) = {
+            post: "/echo"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Echo the message"
+            description: "Repeat the message back in the response"
+        };
+    }
+}
