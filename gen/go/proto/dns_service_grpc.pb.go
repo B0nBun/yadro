@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.4.0
 // - protoc             v3.12.4
-// source: proto/dns_service.proto
+// source: dns_service.proto
 
 package dns_service
 
@@ -106,5 +106,5 @@ var DnsService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/dns_service.proto",
+	Metadata: "dns_service.proto",
 }

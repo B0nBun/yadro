@@ -12,7 +12,7 @@ message StringMessage {
 service DnsService {
     rpc Echo(StringMessage) returns (StringMessage) {
         option (google.api.http) = {
-            post: "/echo"
+            get: "/api/echo"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Echo the message"

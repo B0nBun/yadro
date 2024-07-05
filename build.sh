@@ -2,14 +2,29 @@
 
 set -xeuo pipefail
 
+PROTO_IMPORT_DIR=./proto
+PROTO_SERVICE=proto/dns_service.proto
+
+PROTO_GEN_PATH=./gen/go/proto
+OPENAPI_GEN_PATH=./gen/openapiv2
+
+mkdir -p $PROTO_GEN_PATH
+mkdir -p $OPENAPI_GEN_PATH
+
 # gRPC stubs
-protoc -I ./proto \
-    --go_out ./gen/go/ --go_opt paths=source_relative \
-    --go-grpc_out ./gen/go/ --go-grpc_opt paths=source_relative \
-    proto/dns_service.proto
+protoc -I $PROTO_IMPORT_DIR \
+    --go_out ./gen/go/proto --go_opt paths=source_relative \
+    --go-grpc_out ./gen/go/proto --go-grpc_opt paths=source_relative \
+    $PROTO_SERVICE
+
+# Gateway
+protoc -I $PROTO_IMPORT_DIR --grpc-gateway_out ./gen/go/proto \
+    --grpc-gateway_opt paths=source_relative \
+    $PROTO_SERVICE
 
 # OpenAPI docs
-protoc -I ./proto --openapiv2_out ./gen/openapiv2 proto/dns_service.proto
+protoc -I $PROTO_IMPORT_DIR --openapiv2_out ./gen/openapiv2 \
+    $PROTO_SERVICE
 
 
 go build -o server.out server/main.go

@@ -16,8 +16,8 @@
     "application/json"
   ],
   "paths": {
-    "/echo": {
-      "post": {
+    "/api/echo": {
+      "get": {
         "summary": "Echo the message",
         "description": "Repeat the message back in the response",
         "operationId": "DnsService_Echo",
