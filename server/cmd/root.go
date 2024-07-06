@@ -6,18 +6,18 @@ import (
 	"net"
 	"os"
 
+	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
-	"github.com/spf13/cobra"
 	"yadro-dns/gen/go/proto"
 	"yadro-dns/server/gateway"
 	"yadro-dns/server/service"
 )
 
 var rootCmd = &cobra.Command{
-	Use: "server",
+	Use:   "server",
 	Short: "start grpc and http servers for the dns-service",
-	Run: runServer,
+	Run:   runServer,
 }
 
 func init() {

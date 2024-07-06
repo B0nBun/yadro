@@ -1,9 +1,9 @@
 package main
 
 import (
-	"yadro-dns/server/cmd"
 	"log"
-) 
+	"yadro-dns/server/cmd"
+)
 
 // TODO: Actual task with DNS and stuff
 // TODO: Check out if HTTPS is needed

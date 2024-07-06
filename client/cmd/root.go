@@ -6,7 +6,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use: "client",
+	Use:   "client",
 	Short: "control the hostname and dns servers remotely",
 }
 

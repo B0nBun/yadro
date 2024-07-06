@@ -1,16 +1,15 @@
 package cmd
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"yadro-dns/gen/go/proto"
-	"github.com/spf13/cobra"
 )
-
 
 func init() {
 	hostnameCmd.Flags().StringP("set", "s", "", "set new hostname on the server")
@@ -18,9 +17,9 @@ func init() {
 }
 
 var hostnameCmd = &cobra.Command{
-	Use: "hostname",
+	Use:   "hostname",
 	Short: "Control hostname of the server",
-	Run: func (cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) {
 		addr, _ := cmd.Flags().GetString("addr")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
 		setFlag := cmd.Flags().Lookup("set")
@@ -53,4 +52,3 @@ var hostnameCmd = &cobra.Command{
 		fmt.Println(r.GetName())
 	},
 }
-
