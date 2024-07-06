@@ -1,4 +1,4 @@
-package service
+package main
 
 import (
 	"bytes"
@@ -11,12 +11,12 @@ import (
 	"yadro-dns/gen/go/proto"
 )
 
-type Server struct {
+type DnsServiceServer struct {
 	proto.UnimplementedDnsServiceServer
 	Log *grpclog.LoggerV2
 }
 
-func (s *Server) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (*proto.Hostname, error) {
+func (s *DnsServiceServer) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (*proto.Hostname, error) {
 	stdout, _, err := runCmd("hostname")
 	if err != nil {
 		return &proto.Hostname{}, fmt.Errorf("failed to get the hostname: %w", err)
@@ -25,7 +25,7 @@ func (s *Server) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (
 	return &proto.Hostname{Name: name}, nil
 }
 
-func (s *Server) SetHostname(ctx context.Context, in *proto.Hostname) (*proto.Hostname, error) {
+func (s *DnsServiceServer) SetHostname(ctx context.Context, in *proto.Hostname) (*proto.Hostname, error) {
 	_, _, err := runCmd("hostnamectl", "hostname", in.GetName())
 	if err != nil {
 		return &proto.Hostname{}, fmt.Errorf("failed to change the hostname: %w", err)

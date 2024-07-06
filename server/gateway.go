@@ -1,4 +1,4 @@
-package gateway
+package main
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"yadro-dns/gen/go/proto"
 )
 
-func Run(httpAddr, rpcAddr string) error {
+func GatewayRun(httpAddr, rpcAddr string) error {
 	conn, err := grpc.NewClient(
 		rpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
