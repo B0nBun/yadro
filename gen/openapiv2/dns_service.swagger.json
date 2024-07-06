@@ -18,14 +18,14 @@
   "paths": {
     "/api/dns-servers": {
       "get": {
-        "summary": "Get the list of the dns servers used by the callee",
+        "summary": "Get a list of dns servers used by the callee",
         "description": "TODO",
         "operationId": "DnsService_ListDnsServers",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dns_serviceListDnsServerResponse"
+              "$ref": "#/definitions/dns_serviceDnsServers"
             }
           },
           "default": {
@@ -35,50 +35,19 @@
             }
           }
         },
-        "tags": [
-          "DnsService"
-        ]
-      },
-      "delete": {
-        "summary": "Remove the dns server from callee's list",
-        "description": "TODO",
-        "operationId": "DnsService_RemoveDnsServer",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/dns_serviceRemoveDnsServerResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ip",
-            "description": "TODO: Maybe choose some other type",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "tags": [
           "DnsService"
         ]
       },
       "post": {
-        "summary": "Add a dns server to be used by the callee",
+        "summary": "Add dns servers to the list used by the callee",
         "description": "TODO",
         "operationId": "DnsService_AddDnsServer",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dns_serviceAddDnsServerResponse"
+              "$ref": "#/definitions/dns_serviceDnsServers"
             }
           },
           "default": {
@@ -94,7 +63,41 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/dns_serviceDnsServer"
+              "$ref": "#/definitions/dns_serviceDnsServers"
+            }
+          }
+        ],
+        "tags": [
+          "DnsService"
+        ]
+      }
+    },
+    "/api/dns-servers/delete": {
+      "put": {
+        "summary": "Remove the specified dns servers from callee's list",
+        "description": "TODO",
+        "operationId": "DnsService_RemoveDnsServer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dns_serviceDnsServers"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dns_serviceDnsServers"
             }
           }
         ],
@@ -161,21 +164,6 @@
     }
   },
   "definitions": {
-    "dns_serviceAddDnsServerResponse": {
-      "type": "object",
-      "properties": {
-        "added": {
-          "type": "boolean"
-        },
-        "servers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/dns_serviceDnsServer"
-          }
-        }
-      }
-    },
     "dns_serviceDnsServer": {
       "type": "object",
       "properties": {
@@ -185,38 +173,23 @@
         }
       }
     },
+    "dns_serviceDnsServers": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dns_serviceDnsServer"
+          }
+        }
+      }
+    },
     "dns_serviceHostname": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string"
-        }
-      }
-    },
-    "dns_serviceListDnsServerResponse": {
-      "type": "object",
-      "properties": {
-        "servers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/dns_serviceDnsServer"
-          }
-        }
-      }
-    },
-    "dns_serviceRemoveDnsServerResponse": {
-      "type": "object",
-      "properties": {
-        "removed": {
-          "type": "boolean"
-        },
-        "servers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/dns_serviceDnsServer"
-          }
         }
       }
     },

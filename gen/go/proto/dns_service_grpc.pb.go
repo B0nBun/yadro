@@ -33,9 +33,11 @@ const (
 type DnsServiceClient interface {
 	SetHostname(ctx context.Context, in *Hostname, opts ...grpc.CallOption) (*Hostname, error)
 	GetHostname(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Hostname, error)
-	ListDnsServers(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ListDnsServerResponse, error)
-	AddDnsServer(ctx context.Context, in *DnsServer, opts ...grpc.CallOption) (*AddDnsServerResponse, error)
-	RemoveDnsServer(ctx context.Context, in *DnsServer, opts ...grpc.CallOption) (*RemoveDnsServerResponse, error)
+	ListDnsServers(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*DnsServers, error)
+	AddDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
+	// "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
+	// is quite awful, so I chose to use POST with a special endpoint
+	RemoveDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
 }
 
 type dnsServiceClient struct {
@@ -66,9 +68,9 @@ func (c *dnsServiceClient) GetHostname(ctx context.Context, in *empty.Empty, opt
 	return out, nil
 }
 
-func (c *dnsServiceClient) ListDnsServers(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ListDnsServerResponse, error) {
+func (c *dnsServiceClient) ListDnsServers(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*DnsServers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListDnsServerResponse)
+	out := new(DnsServers)
 	err := c.cc.Invoke(ctx, DnsService_ListDnsServers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -76,9 +78,9 @@ func (c *dnsServiceClient) ListDnsServers(ctx context.Context, in *empty.Empty, 
 	return out, nil
 }
 
-func (c *dnsServiceClient) AddDnsServer(ctx context.Context, in *DnsServer, opts ...grpc.CallOption) (*AddDnsServerResponse, error) {
+func (c *dnsServiceClient) AddDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AddDnsServerResponse)
+	out := new(DnsServers)
 	err := c.cc.Invoke(ctx, DnsService_AddDnsServer_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -86,9 +88,9 @@ func (c *dnsServiceClient) AddDnsServer(ctx context.Context, in *DnsServer, opts
 	return out, nil
 }
 
-func (c *dnsServiceClient) RemoveDnsServer(ctx context.Context, in *DnsServer, opts ...grpc.CallOption) (*RemoveDnsServerResponse, error) {
+func (c *dnsServiceClient) RemoveDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RemoveDnsServerResponse)
+	out := new(DnsServers)
 	err := c.cc.Invoke(ctx, DnsService_RemoveDnsServer_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -102,9 +104,11 @@ func (c *dnsServiceClient) RemoveDnsServer(ctx context.Context, in *DnsServer, o
 type DnsServiceServer interface {
 	SetHostname(context.Context, *Hostname) (*Hostname, error)
 	GetHostname(context.Context, *empty.Empty) (*Hostname, error)
-	ListDnsServers(context.Context, *empty.Empty) (*ListDnsServerResponse, error)
-	AddDnsServer(context.Context, *DnsServer) (*AddDnsServerResponse, error)
-	RemoveDnsServer(context.Context, *DnsServer) (*RemoveDnsServerResponse, error)
+	ListDnsServers(context.Context, *empty.Empty) (*DnsServers, error)
+	AddDnsServer(context.Context, *DnsServers) (*DnsServers, error)
+	// "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
+	// is quite awful, so I chose to use POST with a special endpoint
+	RemoveDnsServer(context.Context, *DnsServers) (*DnsServers, error)
 	mustEmbedUnimplementedDnsServiceServer()
 }
 
@@ -118,13 +122,13 @@ func (UnimplementedDnsServiceServer) SetHostname(context.Context, *Hostname) (*H
 func (UnimplementedDnsServiceServer) GetHostname(context.Context, *empty.Empty) (*Hostname, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHostname not implemented")
 }
-func (UnimplementedDnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*ListDnsServerResponse, error) {
+func (UnimplementedDnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*DnsServers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDnsServers not implemented")
 }
-func (UnimplementedDnsServiceServer) AddDnsServer(context.Context, *DnsServer) (*AddDnsServerResponse, error) {
+func (UnimplementedDnsServiceServer) AddDnsServer(context.Context, *DnsServers) (*DnsServers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDnsServer not implemented")
 }
-func (UnimplementedDnsServiceServer) RemoveDnsServer(context.Context, *DnsServer) (*RemoveDnsServerResponse, error) {
+func (UnimplementedDnsServiceServer) RemoveDnsServer(context.Context, *DnsServers) (*DnsServers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveDnsServer not implemented")
 }
 func (UnimplementedDnsServiceServer) mustEmbedUnimplementedDnsServiceServer() {}
@@ -195,7 +199,7 @@ func _DnsService_ListDnsServers_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _DnsService_AddDnsServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DnsServer)
+	in := new(DnsServers)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -207,13 +211,13 @@ func _DnsService_AddDnsServer_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: DnsService_AddDnsServer_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsServiceServer).AddDnsServer(ctx, req.(*DnsServer))
+		return srv.(DnsServiceServer).AddDnsServer(ctx, req.(*DnsServers))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DnsService_RemoveDnsServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DnsServer)
+	in := new(DnsServers)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -225,7 +229,7 @@ func _DnsService_RemoveDnsServer_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: DnsService_RemoveDnsServer_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsServiceServer).RemoveDnsServer(ctx, req.(*DnsServer))
+		return srv.(DnsServiceServer).RemoveDnsServer(ctx, req.(*DnsServers))
 	}
 	return interceptor(ctx, in, info, handler)
 }

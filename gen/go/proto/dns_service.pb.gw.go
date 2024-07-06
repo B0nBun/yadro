@@ -95,7 +95,7 @@ func local_request_DnsService_ListDnsServers_0(ctx context.Context, marshaler ru
 }
 
 func request_DnsService_AddDnsServer_0(ctx context.Context, marshaler runtime.Marshaler, client DnsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DnsServer
+	var protoReq DnsServers
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
@@ -108,7 +108,7 @@ func request_DnsService_AddDnsServer_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func local_request_DnsService_AddDnsServer_0(ctx context.Context, marshaler runtime.Marshaler, server DnsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DnsServer
+	var protoReq DnsServers
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
@@ -120,18 +120,11 @@ func local_request_DnsService_AddDnsServer_0(ctx context.Context, marshaler runt
 
 }
 
-var (
-	filter_DnsService_RemoveDnsServer_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_DnsService_RemoveDnsServer_0(ctx context.Context, marshaler runtime.Marshaler, client DnsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DnsServer
+	var protoReq DnsServers
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_RemoveDnsServer_0); err != nil {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -141,13 +134,10 @@ func request_DnsService_RemoveDnsServer_0(ctx context.Context, marshaler runtime
 }
 
 func local_request_DnsService_RemoveDnsServer_0(ctx context.Context, marshaler runtime.Marshaler, server DnsServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DnsServer
+	var protoReq DnsServers
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DnsService_RemoveDnsServer_0); err != nil {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -262,7 +252,7 @@ func RegisterDnsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_DnsService_RemoveDnsServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_DnsService_RemoveDnsServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -270,7 +260,7 @@ func RegisterDnsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/dns_service.DnsService/RemoveDnsServer", runtime.WithHTTPPathPattern("/api/dns-servers"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/dns_service.DnsService/RemoveDnsServer", runtime.WithHTTPPathPattern("/api/dns-servers/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -416,13 +406,13 @@ func RegisterDnsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_DnsService_RemoveDnsServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_DnsService_RemoveDnsServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/dns_service.DnsService/RemoveDnsServer", runtime.WithHTTPPathPattern("/api/dns-servers"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/dns_service.DnsService/RemoveDnsServer", runtime.WithHTTPPathPattern("/api/dns-servers/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -450,7 +440,7 @@ var (
 
 	pattern_DnsService_AddDnsServer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "dns-servers"}, ""))
 
-	pattern_DnsService_RemoveDnsServer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "dns-servers"}, ""))
+	pattern_DnsService_RemoveDnsServer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "dns-servers", "delete"}, ""))
 )
 
 var (

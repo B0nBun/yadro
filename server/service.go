@@ -42,33 +42,26 @@ func (s *DnsServiceServer) SetHostname(_ context.Context, in *proto.Hostname) (*
 	return &proto.Hostname{Name: name}, nil
 }
 
-func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto.ListDnsServerResponse, error) {
-	return &proto.ListDnsServerResponse {
-		Servers: s.DnsServers,
+func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto.DnsServers, error) {
+	return &proto.DnsServers {
+		List: s.DnsServers,
 	}, nil
 }
 
-func (s *DnsServiceServer) AddDnsServer(_ context.Context, server *proto.DnsServer) (*proto.AddDnsServerResponse, error) {
+func (s *DnsServiceServer) AddDnsServer(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
 	// TODO: Not add duplicate dns servers
-	s.DnsServers = append(s.DnsServers, server)
-	return &proto.AddDnsServerResponse {
-		Added: true,
-		Servers: s.DnsServers,
+	s.DnsServers = append(s.DnsServers, servers.List...)
+	return &proto.DnsServers {
+		List: s.DnsServers,
 	}, nil
 }
 
-func (s *DnsServiceServer) RemoveDnsServer(_ context.Context, server *proto.DnsServer) (*proto.RemoveDnsServerResponse, error) {
-	idx := slices.IndexFunc(s.DnsServers, func (s *proto.DnsServer) bool { return s.Ip == server.Ip })
-	if idx == -1 {
-		return &proto.RemoveDnsServerResponse{
-			Removed: false,
-			Servers: s.DnsServers,
-		}, nil
-	}
-	s.DnsServers = append(s.DnsServers[:idx], s.DnsServers[idx+1:]...)
-	return &proto.RemoveDnsServerResponse{
-		Removed: true,
-		Servers: s.DnsServers,
+func (s *DnsServiceServer) RemoveDnsServer(_ context.Context, toDelete *proto.DnsServers) (*proto.DnsServers, error) {
+	s.DnsServers = slices.DeleteFunc(s.DnsServers, func (s *proto.DnsServer) bool {
+		return slices.IndexFunc(toDelete.List, func (ds *proto.DnsServer) bool { return s.Ip == ds.Ip }) != -1
+	})
+	return &proto.DnsServers{
+		List: s.DnsServers,
 	}, nil
 }
 

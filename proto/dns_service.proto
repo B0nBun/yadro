@@ -14,18 +14,8 @@ message DnsServer {
     string ip = 1; // TODO: Maybe choose some other type
 }
 
-message ListDnsServerResponse {
-    repeated DnsServer servers = 1;
-}
-
-message AddDnsServerResponse {
-    bool added = 1;
-    repeated DnsServer servers = 2;
-}
-
-message RemoveDnsServerResponse {
-    bool removed = 1;
-    repeated DnsServer servers = 2;
+message DnsServers {
+    repeated DnsServer list = 1;
 }
 
 service DnsService {
@@ -50,33 +40,36 @@ service DnsService {
         };
     }
 
-    rpc ListDnsServers(google.protobuf.Empty) returns (ListDnsServerResponse) {
+    rpc ListDnsServers(google.protobuf.Empty) returns (DnsServers) {
         option (google.api.http) = {
             get: "/api/dns-servers"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get the list of the dns servers used by the callee"
+            summary: "Get a list of dns servers used by the callee"
             description: "TODO"
         };
     }
 
-    rpc AddDnsServer(DnsServer) returns (AddDnsServerResponse) {
+    rpc AddDnsServer(DnsServers) returns (DnsServers) {
         option (google.api.http) = {
             post: "/api/dns-servers"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Add a dns server to be used by the callee"
+            summary: "Add dns servers to the list used by the callee"
             description: "TODO"
         };
     }
 
-    rpc RemoveDnsServer(DnsServer) returns (RemoveDnsServerResponse) {
+    // "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
+    // is quite awful, so I chose to use "PUT" with a special endpoint
+    rpc RemoveDnsServer(DnsServers) returns (DnsServers) {
         option (google.api.http) = {
-            delete: "/api/dns-servers"
+            put: "/api/dns-servers/delete"
+            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Remove the dns server from callee's list"
+            summary: "Remove the specified dns servers from callee's list"
             description: "TODO"
         };
     }
