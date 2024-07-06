@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc/grpclog"
 	"strings"
-	"yadro-dns/gen/go/proto"
+	"yadro/gen/go/proto"
 )
 
 type DnsServiceServer struct {

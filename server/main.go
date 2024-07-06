@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
-	"log"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
-	"yadro-dns/gen/go/proto"
+	"yadro/gen/go/proto"
 )
 
 // TODO: Actual task with DNS and stuff

@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"yadro-dns/gen/go/proto"
-	"yadro-dns/client/service"
+	"yadro/client/service"
+	"yadro/gen/go/proto"
 )
 
 func init() {
@@ -22,12 +22,12 @@ var hostnameCmd = &cobra.Command{
 		timeout, _ := cmd.Flags().GetDuration("timeout")
 		rest, _ := cmd.Flags().GetBool("rest")
 		setFlag := cmd.Flags().Lookup("set")
-		
-		c, err, cleanup := service.NewClient(addr, timeout, rest)
+
+		c, err := service.NewCaller(addr, timeout, rest)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer cleanup()
+		defer c.Cleanup()
 
 		if setFlag.Changed {
 			hostname, _ := cmd.Flags().GetString("set")

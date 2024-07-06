@@ -1,4 +1,4 @@
-module yadro-dns
+module yadro
 
 go 1.21.6
 

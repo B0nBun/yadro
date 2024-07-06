@@ -9,7 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"yadro-dns/gen/go/proto"
+	"yadro/gen/go/proto"
 )
 
 func GatewayRun(httpAddr, rpcAddr string) error {

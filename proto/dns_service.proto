@@ -1,6 +1,6 @@
 syntax = "proto3";
 package dns_service;
-option go_package = "yadro-dns/gen/go/proto";
+option go_package = "yadro/gen/go/proto";
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
