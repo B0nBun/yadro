@@ -48,7 +48,7 @@ func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto
 	}, nil
 }
 
-func (s *DnsServiceServer) AddDnsServer(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
+func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
 	// TODO: Not add duplicate dns servers
 	s.DnsServers = append(s.DnsServers, servers.List...)
 	return &proto.DnsServers {
@@ -56,7 +56,7 @@ func (s *DnsServiceServer) AddDnsServer(_ context.Context, servers *proto.DnsSer
 	}, nil
 }
 
-func (s *DnsServiceServer) RemoveDnsServer(_ context.Context, toDelete *proto.DnsServers) (*proto.DnsServers, error) {
+func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, toDelete *proto.DnsServers) (*proto.DnsServers, error) {
 	s.DnsServers = slices.DeleteFunc(s.DnsServers, func (s *proto.DnsServer) bool {
 		return slices.IndexFunc(toDelete.List, func (ds *proto.DnsServer) bool { return s.Ip == ds.Ip }) != -1
 	})

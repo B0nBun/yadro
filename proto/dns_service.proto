@@ -50,7 +50,7 @@ service DnsService {
         };
     }
 
-    rpc AddDnsServer(DnsServers) returns (DnsServers) {
+    rpc AddDnsServers(DnsServers) returns (DnsServers) {
         option (google.api.http) = {
             post: "/api/dns-servers"
             body: "*"
@@ -61,9 +61,9 @@ service DnsService {
         };
     }
 
-    // "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
+    // "DELETE" method isn't good for requests with a body and specifying a list of dns-servers in query-params
     // is quite awful, so I chose to use "PUT" with a special endpoint
-    rpc RemoveDnsServer(DnsServers) returns (DnsServers) {
+    rpc RemoveDnsServers(DnsServers) returns (DnsServers) {
         option (google.api.http) = {
             put: "/api/dns-servers/delete"
             body: "*"

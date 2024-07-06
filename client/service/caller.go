@@ -115,10 +115,10 @@ func (c *RESTCaller) Call(rpcMethod string, args, resp interface{}) error {
 
 	req, err := http.NewRequest(method, apiUrl, bytes.NewBuffer(encoded))
 	r, err := c.httpC.Do(req)
-	defer r.Body.Close()
 	if err != nil {
 		return fmt.Errorf("failed request: %v", err)
 	}
+	defer r.Body.Close()
 	err = json.NewDecoder(r.Body).Decode(resp)
 	if err != nil {
 		return fmt.Errorf("failed to decode json: %v", err)
@@ -132,6 +132,12 @@ func rpcToRest(rpcMethod string) (method string, url string) {
 		return "GET", "/api/hostname"
 	case "SetHostname":
 		return "POST", "/api/hostname"
+	case "ListDnsServers":
+		return "GET", "/api/dns-servers"
+	case "AddDnsServer":
+		return "POST", "/api/dns-servers"
+	case "RemoveDnsServer":
+		return "PUT", "/api/dns-servers/delete"
 	default:
 		panic(fmt.Sprintf("Got unexpected rpc method '%v'", rpcMethod))
 	}

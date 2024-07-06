@@ -42,7 +42,7 @@
       "post": {
         "summary": "Add dns servers to the list used by the callee",
         "description": "TODO",
-        "operationId": "DnsService_AddDnsServer",
+        "operationId": "DnsService_AddDnsServers",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -76,7 +76,7 @@
       "put": {
         "summary": "Remove the specified dns servers from callee's list",
         "description": "TODO",
-        "operationId": "DnsService_RemoveDnsServer",
+        "operationId": "DnsService_RemoveDnsServers",
         "responses": {
           "200": {
             "description": "A successful response.",

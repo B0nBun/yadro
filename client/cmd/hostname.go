@@ -42,7 +42,7 @@ var hostnameCmd = &cobra.Command{
 			resp := proto.Hostname{}
 			err := c.Call("GetHostname", &empty.Empty{}, &resp)
 			if err != nil {
-				log.Fatalf("rpc failed: %v", err)
+				log.Fatalf("request failed: %v", err)
 			}
 			fmt.Println(resp.GetName())
 		}

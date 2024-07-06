@@ -20,11 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	DnsService_SetHostname_FullMethodName     = "/dns_service.DnsService/SetHostname"
-	DnsService_GetHostname_FullMethodName     = "/dns_service.DnsService/GetHostname"
-	DnsService_ListDnsServers_FullMethodName  = "/dns_service.DnsService/ListDnsServers"
-	DnsService_AddDnsServer_FullMethodName    = "/dns_service.DnsService/AddDnsServer"
-	DnsService_RemoveDnsServer_FullMethodName = "/dns_service.DnsService/RemoveDnsServer"
+	DnsService_SetHostname_FullMethodName      = "/dns_service.DnsService/SetHostname"
+	DnsService_GetHostname_FullMethodName      = "/dns_service.DnsService/GetHostname"
+	DnsService_ListDnsServers_FullMethodName   = "/dns_service.DnsService/ListDnsServers"
+	DnsService_AddDnsServers_FullMethodName    = "/dns_service.DnsService/AddDnsServers"
+	DnsService_RemoveDnsServers_FullMethodName = "/dns_service.DnsService/RemoveDnsServers"
 )
 
 // DnsServiceClient is the client API for DnsService service.
@@ -34,10 +34,10 @@ type DnsServiceClient interface {
 	SetHostname(ctx context.Context, in *Hostname, opts ...grpc.CallOption) (*Hostname, error)
 	GetHostname(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Hostname, error)
 	ListDnsServers(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*DnsServers, error)
-	AddDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
-	// "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
-	// is quite awful, so I chose to use POST with a special endpoint
-	RemoveDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
+	AddDnsServers(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
+	// "DELETE" method isn't good for requests with a body and specifying a list of dns-servers in query-params
+	// is quite awful, so I chose to use "PUT" with a special endpoint
+	RemoveDnsServers(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error)
 }
 
 type dnsServiceClient struct {
@@ -78,20 +78,20 @@ func (c *dnsServiceClient) ListDnsServers(ctx context.Context, in *empty.Empty, 
 	return out, nil
 }
 
-func (c *dnsServiceClient) AddDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
+func (c *dnsServiceClient) AddDnsServers(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DnsServers)
-	err := c.cc.Invoke(ctx, DnsService_AddDnsServer_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, DnsService_AddDnsServers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dnsServiceClient) RemoveDnsServer(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
+func (c *dnsServiceClient) RemoveDnsServers(ctx context.Context, in *DnsServers, opts ...grpc.CallOption) (*DnsServers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DnsServers)
-	err := c.cc.Invoke(ctx, DnsService_RemoveDnsServer_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, DnsService_RemoveDnsServers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +105,10 @@ type DnsServiceServer interface {
 	SetHostname(context.Context, *Hostname) (*Hostname, error)
 	GetHostname(context.Context, *empty.Empty) (*Hostname, error)
 	ListDnsServers(context.Context, *empty.Empty) (*DnsServers, error)
-	AddDnsServer(context.Context, *DnsServers) (*DnsServers, error)
-	// "DELETE" method isn't good for requests with body and specifying a list of dns-servers in query-params
-	// is quite awful, so I chose to use POST with a special endpoint
-	RemoveDnsServer(context.Context, *DnsServers) (*DnsServers, error)
+	AddDnsServers(context.Context, *DnsServers) (*DnsServers, error)
+	// "DELETE" method isn't good for requests with a body and specifying a list of dns-servers in query-params
+	// is quite awful, so I chose to use "PUT" with a special endpoint
+	RemoveDnsServers(context.Context, *DnsServers) (*DnsServers, error)
 	mustEmbedUnimplementedDnsServiceServer()
 }
 
@@ -125,11 +125,11 @@ func (UnimplementedDnsServiceServer) GetHostname(context.Context, *empty.Empty) 
 func (UnimplementedDnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*DnsServers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDnsServers not implemented")
 }
-func (UnimplementedDnsServiceServer) AddDnsServer(context.Context, *DnsServers) (*DnsServers, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddDnsServer not implemented")
+func (UnimplementedDnsServiceServer) AddDnsServers(context.Context, *DnsServers) (*DnsServers, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddDnsServers not implemented")
 }
-func (UnimplementedDnsServiceServer) RemoveDnsServer(context.Context, *DnsServers) (*DnsServers, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveDnsServer not implemented")
+func (UnimplementedDnsServiceServer) RemoveDnsServers(context.Context, *DnsServers) (*DnsServers, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveDnsServers not implemented")
 }
 func (UnimplementedDnsServiceServer) mustEmbedUnimplementedDnsServiceServer() {}
 
@@ -198,38 +198,38 @@ func _DnsService_ListDnsServers_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DnsService_AddDnsServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DnsService_AddDnsServers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DnsServers)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DnsServiceServer).AddDnsServer(ctx, in)
+		return srv.(DnsServiceServer).AddDnsServers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: DnsService_AddDnsServer_FullMethodName,
+		FullMethod: DnsService_AddDnsServers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsServiceServer).AddDnsServer(ctx, req.(*DnsServers))
+		return srv.(DnsServiceServer).AddDnsServers(ctx, req.(*DnsServers))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DnsService_RemoveDnsServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DnsService_RemoveDnsServers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DnsServers)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DnsServiceServer).RemoveDnsServer(ctx, in)
+		return srv.(DnsServiceServer).RemoveDnsServers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: DnsService_RemoveDnsServer_FullMethodName,
+		FullMethod: DnsService_RemoveDnsServers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsServiceServer).RemoveDnsServer(ctx, req.(*DnsServers))
+		return srv.(DnsServiceServer).RemoveDnsServers(ctx, req.(*DnsServers))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,12 +254,12 @@ var DnsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DnsService_ListDnsServers_Handler,
 		},
 		{
-			MethodName: "AddDnsServer",
-			Handler:    _DnsService_AddDnsServer_Handler,
+			MethodName: "AddDnsServers",
+			Handler:    _DnsService_AddDnsServers_Handler,
 		},
 		{
-			MethodName: "RemoveDnsServer",
-			Handler:    _DnsService_RemoveDnsServer_Handler,
+			MethodName: "RemoveDnsServers",
+			Handler:    _DnsService_RemoveDnsServers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
