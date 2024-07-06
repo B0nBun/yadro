@@ -69,8 +69,8 @@ func (c *GRPCCaller) Call(method string, args, resp interface{}) error {
 	})
 	result := values[0]
 	errv := values[1]
-	rv.Elem().Set(result.Elem())
 	if errv.IsNil() {
+		rv.Elem().Set(result.Elem())
 		return nil
 	} else {
 		return errv.Interface().(error)
