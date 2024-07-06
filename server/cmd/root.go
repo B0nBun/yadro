@@ -21,13 +21,13 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().UintP("http-port", "H", 1234, "port used for the REST http-server")
+	rootCmd.Flags().UintP("rest-port", "R", 1234, "port used for the REST http-server")
 	rootCmd.Flags().UintP("grpc-port", "G", 1235, "port used for the grpc server")
 }
 
 func runServer(cmd *cobra.Command, _args []string) {
 	grpcPort, _ := cmd.Flags().GetUint("grpc-port")
-	httpPort, _ := cmd.Flags().GetUint("http-port")
+	restPort, _ := cmd.Flags().GetUint("rest-port")
 
 	log := grpclog.NewLoggerV2(os.Stdout, io.Discard, io.Discard)
 	grpclog.SetLoggerV2(log)
@@ -38,7 +38,7 @@ func runServer(cmd *cobra.Command, _args []string) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer() // TODO: Replace with a certificate if necessary!
+	s := grpc.NewServer()
 
 	proto.RegisterDnsServiceServer(s, &service.Server{
 		Log: &log,
@@ -49,7 +49,7 @@ func runServer(cmd *cobra.Command, _args []string) {
 		log.Fatal(s.Serve(lis))
 	}()
 
-	restAddr := fmt.Sprintf("0.0.0.0:%d", httpPort)
+	restAddr := fmt.Sprintf("0.0.0.0:%d", restPort)
 	rpcAddr := "dns:///" + addr
 	log.Infof("serving REST on http://%s", restAddr)
 	err = gateway.Run(restAddr, rpcAddr)

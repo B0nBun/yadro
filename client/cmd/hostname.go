@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"yadro-dns/gen/go/proto"
+	"yadro-dns/client/service"
 )
 
 func init() {
@@ -24,31 +22,21 @@ var hostnameCmd = &cobra.Command{
 		timeout, _ := cmd.Flags().GetDuration("timeout")
 		setFlag := cmd.Flags().Lookup("set")
 
-		conn, err := grpc.NewClient(
-			addr,
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
-		if err != nil {
-			log.Fatalf("failed to connect: %v", err)
-		}
-		defer conn.Close()
-
-		c := proto.NewDnsServiceClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-
-		var r *proto.Hostname
-
 		if setFlag.Changed {
 			hostname, _ := cmd.Flags().GetString("set")
-			r, err = c.SetHostname(ctx, &proto.Hostname{Name: hostname})
+			resp := proto.Hostname{}
+			err := service.CallGRPC(addr, "SetHostname", timeout, &proto.Hostname{Name: hostname}, &resp)
+			if err != nil {
+				log.Fatal("rpc failed: %v", err)
+			}
+			fmt.Println(resp.GetName())
 		} else {
-			r, err = c.GetHostname(ctx, &proto.GetHostnameParams{})
+			resp := proto.Hostname{}
+			err := service.CallGRPC(addr, "GetHostname", timeout, &proto.GetHostnameParams{}, &resp)
+			if err != nil {
+				log.Fatal("rpc failed: %v", err)
+			}
+			fmt.Println(resp.GetName())
 		}
-
-		if err != nil {
-			log.Fatalf("rpc failed: %v", err)
-		}
-		fmt.Println(r.GetName())
 	},
 }

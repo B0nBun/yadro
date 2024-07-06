@@ -39,6 +39,5 @@ func Run(httpAddr, rpcAddr string) error {
 		}),
 	}
 
-	// TODO: Consider https? (https://github.com/johanbrandhorst/grpc-gateway-boilerplate/blob/main/gateway/gateway.go#L77)
 	return server.ListenAndServe()
 }
