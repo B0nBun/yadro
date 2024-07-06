@@ -3,6 +3,7 @@ module yadro
 go 1.21.6
 
 require (
+	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
 	github.com/spf13/cobra v1.8.1
 	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8

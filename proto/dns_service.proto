@@ -3,13 +3,30 @@ package dns_service;
 option go_package = "yadro/gen/go/proto";
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 message Hostname {
     string name = 1;
 }
 
-message GetHostnameParams {}
+message DnsServer {
+    string ip = 1; // TODO: Maybe choose some other type
+}
+
+message ListDnsServerResponse {
+    repeated DnsServer servers = 1;
+}
+
+message AddDnsServerResponse {
+    bool added = 1;
+    repeated DnsServer servers = 2;
+}
+
+message RemoveDnsServerResponse {
+    bool removed = 1;
+    repeated DnsServer servers = 2;
+}
 
 service DnsService {
     rpc SetHostname(Hostname) returns (Hostname) {
@@ -23,13 +40,44 @@ service DnsService {
         };
     }
 
-    rpc GetHostname(GetHostnameParams) returns (Hostname) {
+    rpc GetHostname(google.protobuf.Empty) returns (Hostname) {
         option (google.api.http) = {
             get: "/api/hostname"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get the hostname from the server"
             description: "Gets the server's hostname via a `hostnamectl` command"
+        };
+    }
+
+    rpc ListDnsServers(google.protobuf.Empty) returns (ListDnsServerResponse) {
+        option (google.api.http) = {
+            get: "/api/dns-servers"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get the list of the dns servers used by the callee"
+            description: "TODO"
+        };
+    }
+
+    rpc AddDnsServer(DnsServer) returns (AddDnsServerResponse) {
+        option (google.api.http) = {
+            post: "/api/dns-servers"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Add a dns server to be used by the callee"
+            description: "TODO"
+        };
+    }
+
+    rpc RemoveDnsServer(DnsServer) returns (RemoveDnsServerResponse) {
+        option (google.api.http) = {
+            delete: "/api/dns-servers"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Remove the dns server from callee's list"
+            description: "TODO"
         };
     }
 }

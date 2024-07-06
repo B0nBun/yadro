@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/golang/protobuf/ptypes/empty"
 	"yadro/client/service"
 	"yadro/gen/go/proto"
 )
@@ -39,7 +40,7 @@ var hostnameCmd = &cobra.Command{
 			fmt.Println(resp.GetName())
 		} else {
 			resp := proto.Hostname{}
-			err := c.Call("GetHostname", &proto.GetHostnameParams{}, &resp)
+			err := c.Call("GetHostname", &empty.Empty{}, &resp)
 			if err != nil {
 				log.Fatalf("rpc failed: %v", err)
 			}
