@@ -19,6 +19,7 @@ func init() {
 var dnsCmd = &cobra.Command{
 	Use: "dns",
 	Short: "Control dns-server list of the server",
+	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		addr, _ := cmd.Flags().GetString("addr")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
@@ -45,9 +46,9 @@ var dnsCmd = &cobra.Command{
 	},
 }
 
-// TODO: Parse IP to validate it
+// TODO: Parse IP to validate it (net.ParseIP)
 var addCmd = &cobra.Command {
-	Use: "add",
+	Use: "add [dns-ips...]",
 	Short: "Add dns servers remotely",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -84,7 +85,7 @@ var addCmd = &cobra.Command {
 }
 
 var removeCmd = &cobra.Command {
-	Use: "remove",
+	Use: "remove [dns-ips...]",
 	Short: "Remove dns servers remotely",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

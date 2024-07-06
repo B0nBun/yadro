@@ -11,18 +11,18 @@ import (
 )
 
 func init() {
-	hostnameCmd.Flags().StringP("set", "s", "", "set new hostname on the server")
+	hostnameCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(hostnameCmd)
 }
 
 var hostnameCmd = &cobra.Command{
 	Use:   "hostname",
-	Short: "Control hostname of the server",
+	Short: "Get hostname of the server",
+	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		addr, _ := cmd.Flags().GetString("addr")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
 		rest, _ := cmd.Flags().GetBool("rest")
-		setFlag := cmd.Flags().Lookup("set")
 
 		c, err := service.NewCaller(addr, timeout, rest)
 		if err != nil {
@@ -30,21 +30,36 @@ var hostnameCmd = &cobra.Command{
 		}
 		defer c.Cleanup()
 
-		if setFlag.Changed {
-			hostname, _ := cmd.Flags().GetString("set")
-			resp := proto.Hostname{}
-			err := c.Call("SetHostname", &proto.Hostname{Name: hostname}, &resp)
-			if err != nil {
-				log.Fatalf("rpc failed: %v", err)
-			}
-			fmt.Println(resp.GetName())
-		} else {
-			resp := proto.Hostname{}
-			err := c.Call("GetHostname", &empty.Empty{}, &resp)
-			if err != nil {
-				log.Fatalf("request failed: %v", err)
-			}
-			fmt.Println(resp.GetName())
+		resp := proto.Hostname{}
+		err = c.Call("GetHostname", &empty.Empty{}, &resp)
+		if err != nil {
+			log.Fatalf("request failed: %v", err)
 		}
+		fmt.Println(resp.GetName())
+	},
+}
+
+var setCmd = &cobra.Command{
+	Use: "set [hostname]",
+	Short: "Set the hostname on the server",
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		addr, _ := cmd.Flags().GetString("addr")
+		timeout, _ := cmd.Flags().GetDuration("timeout")
+		rest, _ := cmd.Flags().GetBool("rest")
+
+		c, err := service.NewCaller(addr, timeout, rest)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer c.Cleanup()
+
+		hostname := args[0]
+		resp := proto.Hostname{}
+		err = c.Call("SetHostname", &proto.Hostname{Name: hostname}, &resp)
+		if err != nil {
+			log.Fatalf("rpc failed: %v", err)
+		}
+		fmt.Println(resp.GetName())
 	},
 }
