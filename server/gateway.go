@@ -1,4 +1,4 @@
-package gateway
+package main
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	proto "yadro-dns/gen/go/proto"
+	"yadro-dns/gen/go/proto"
 )
 
-func Run(serverAddr, rpcAddr string) error {
+func GatewayRun(serverAddr, rpcAddr string) error {
 	conn, err := grpc.NewClient(
 		rpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

@@ -9,10 +9,10 @@ OPENAPI_GEN_PATH=./gen/openapiv2
 all: proto server client;
 
 server:
-	go build -o server.out server/main.go
+	go build -o server.out ./server
 
 client:
-	go build -o client.out client/main.go
+	go build -o client.out ./client
 
 proto:
 	mkdir -p $(PROTO_GEN_PATH)
