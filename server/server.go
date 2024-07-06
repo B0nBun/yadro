@@ -17,7 +17,7 @@ type Server struct {
 }
 
 func (s *Server) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (*proto.Hostname, error) {
-	stdout, _, err := runCmd("hostnamectl", "hostname")
+	stdout, _, err := runCmd("hostname")
 	if err != nil {
 		return &proto.Hostname{}, fmt.Errorf("failed to get the hostname: %w", err)
 	}
@@ -26,12 +26,17 @@ func (s *Server) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (
 }
 
 func (s *Server) SetHostname(ctx context.Context, in *proto.Hostname) (*proto.Hostname, error) {
-	// TODO: Check what happens when an invalid name is provided
 	_, _, err := runCmd("hostnamectl", "hostname", in.GetName())
 	if err != nil {
 		return &proto.Hostname{}, fmt.Errorf("failed to change the hostname: %w", err)
 	}
-	return in, nil
+	// Invalid names may be changed without any error status or indication from 'hostnamectl', so we have to get it back manually
+	stdout, _, err := runCmd("hostname")
+	if err != nil {
+		return &proto.Hostname{}, fmt.Errorf("failed ot get the changed hostname: %w", err)
+	}
+	name := strings.TrimSuffix(stdout, "\n")
+	return &proto.Hostname{Name: name}, nil
 }
 
 func runCmd(cmd string, args ...string) (stdout string, stderr string, err error) {

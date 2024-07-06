@@ -1,3 +1,4 @@
+# Building out the dependencies is too cumbersome, so everything is a PHONY target
 .PHONY: all server client proto
 
 PROTO_IMPORT_DIR=./proto
