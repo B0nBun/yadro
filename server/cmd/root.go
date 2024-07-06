@@ -25,7 +25,7 @@ func init() {
 	rootCmd.Flags().UintP("grpc-port", "G", 1235, "port used for the grpc server")
 }
 
-func runServer(cmd *cobra.Command, args []string) {
+func runServer(cmd *cobra.Command, _args []string) {
 	grpcPort, _ := cmd.Flags().GetUint("grpc-port")
 	httpPort, _ := cmd.Flags().GetUint("http-port")
 
