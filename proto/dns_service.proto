@@ -15,6 +15,7 @@ service DnsService {
     rpc SetHostname(Hostname) returns (Hostname) {
         option (google.api.http) = {
             post: "/api/hostname"
+            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Set the hostname on the server"

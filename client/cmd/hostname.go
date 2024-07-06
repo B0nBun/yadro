@@ -20,21 +20,28 @@ var hostnameCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		addr, _ := cmd.Flags().GetString("addr")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
+		rest, _ := cmd.Flags().GetBool("rest")
 		setFlag := cmd.Flags().Lookup("set")
+		
+		c, err, cleanup := service.NewClient(addr, timeout, rest)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer cleanup()
 
 		if setFlag.Changed {
 			hostname, _ := cmd.Flags().GetString("set")
 			resp := proto.Hostname{}
-			err := service.CallGRPC(addr, "SetHostname", timeout, &proto.Hostname{Name: hostname}, &resp)
+			err := c.Call("SetHostname", &proto.Hostname{Name: hostname}, &resp)
 			if err != nil {
-				log.Fatal("rpc failed: %v", err)
+				log.Fatalf("rpc failed: %v", err)
 			}
 			fmt.Println(resp.GetName())
 		} else {
 			resp := proto.Hostname{}
-			err := service.CallGRPC(addr, "GetHostname", timeout, &proto.GetHostnameParams{}, &resp)
+			err := c.Call("GetHostname", &proto.GetHostnameParams{}, &resp)
 			if err != nil {
-				log.Fatal("rpc failed: %v", err)
+				log.Fatalf("rpc failed: %v", err)
 			}
 			fmt.Println(resp.GetName())
 		}

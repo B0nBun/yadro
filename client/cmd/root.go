@@ -10,7 +10,6 @@ var rootCmd = &cobra.Command{
 	Short: "control the hostname and dns servers remotely",
 }
 
-// TODO: Add support for client REST http request -- `useRest, _ := cmd.PersistentFlags().GetBool("rest")`
 func init() {
 	rootCmd.PersistentFlags().BoolP("rest", "R", false, "set to true if the client should send REST http request (otherwise it uses grpc)")
 	rootCmd.PersistentFlags().StringP("addr", "a", "0.0.0.0:1235", "server address")
