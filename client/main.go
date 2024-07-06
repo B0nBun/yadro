@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", "localhost:1234", "the address to connect to")
+	addr := flag.String("addr", "localhost:1235", "the address to connect to")
 	flag.Parse()
 
 	conn, err := grpc.NewClient(

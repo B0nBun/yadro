@@ -2,7 +2,7 @@
 .PHONY: all server client proto
 
 PROTO_IMPORT_DIR=./proto
-PROTO_SERVICE=proto/dns_service.proto
+PROTO_SERVICE=./proto/dns_service.proto
 
 PROTO_GEN_PATH=./gen/go/proto
 OPENAPI_GEN_PATH=./gen/openapiv2

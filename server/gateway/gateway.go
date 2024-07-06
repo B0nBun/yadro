@@ -1,4 +1,4 @@
-package main
+package gateway
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"yadro-dns/gen/go/proto"
 )
 
-func GatewayRun(serverAddr, rpcAddr string) error {
+func Run(httpAddr, rpcAddr string) error {
 	conn, err := grpc.NewClient(
 		rpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -29,7 +29,7 @@ func GatewayRun(serverAddr, rpcAddr string) error {
 
 	fileServer := http.FileServer(http.Dir("server/static"))
 	server := &http.Server{
-		Addr: serverAddr,
+		Addr: httpAddr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, "/api") {
 				mux.ServeHTTP(w, r)

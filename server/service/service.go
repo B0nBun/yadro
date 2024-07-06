@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 
 type Server struct {
 	proto.UnimplementedDnsServiceServer
-	log *grpclog.LoggerV2
+	Log *grpclog.LoggerV2
 }
 
 func (s *Server) GetHostname(ctx context.Context, in *proto.GetHostnameParams) (*proto.Hostname, error) {
