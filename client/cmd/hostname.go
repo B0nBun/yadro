@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"context"
 	"log"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -21,9 +20,9 @@ func init() {
 var hostnameCmd = &cobra.Command{
 	Use: "hostname",
 	Short: "Control hostname of the server",
-	Long: "",
 	Run: func (cmd *cobra.Command, args []string) {
 		addr, _ := cmd.Flags().GetString("addr")
+		timeout, _ := cmd.Flags().GetDuration("timeout")
 		setFlag := cmd.Flags().Lookup("set")
 
 		conn, err := grpc.NewClient(
@@ -36,7 +35,7 @@ var hostnameCmd = &cobra.Command{
 		defer conn.Close()
 
 		c := proto.NewDnsServiceClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
 
 		var r *proto.Hostname
