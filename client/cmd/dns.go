@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/golang/protobuf/ptypes/empty"
-	"yadro/client/service"
 	"yadro/gen/go/proto"
 )
 
@@ -21,20 +19,16 @@ var dnsCmd = &cobra.Command{
 	Short: "Control dns-server list of the server",
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		addr, _ := cmd.Flags().GetString("addr")
-		timeout, _ := cmd.Flags().GetDuration("timeout")
-		rest, _ := cmd.Flags().GetBool("rest")
-
-		c, err := service.NewCaller(addr, timeout, rest)
+		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			log.Fatal(err)
+			Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
 		resp := proto.DnsServers{}
 		err = c.Call("ListDnsServers", &empty.Empty{}, &resp)
 		if err != nil {
-			log.Fatalf("request failed: %v", err)
+			Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")
@@ -57,13 +51,9 @@ var addCmd = &cobra.Command {
 			toAdd = append(toAdd, &proto.DnsServer{ Ip: ip })
 		}
 
-		addr, _ := cmd.Flags().GetString("addr")
-		timeout, _ := cmd.Flags().GetDuration("timeout")
-		rest, _ := cmd.Flags().GetBool("rest")
-
-		c, err := service.NewCaller(addr, timeout, rest)
+		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			log.Fatal(err)
+			Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
@@ -72,7 +62,7 @@ var addCmd = &cobra.Command {
 			List: toAdd,
 		}, &resp)
 		if err != nil {
-			log.Fatalf("request failed: %v", err)
+			Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")
@@ -94,13 +84,9 @@ var removeCmd = &cobra.Command {
 			toRemove = append(toRemove, &proto.DnsServer{ Ip: ip })
 		}
 
-		addr, _ := cmd.Flags().GetString("addr")
-		timeout, _ := cmd.Flags().GetDuration("timeout")
-		rest, _ := cmd.Flags().GetBool("rest")
-
-		c, err := service.NewCaller(addr, timeout, rest)
+		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			log.Fatal(err)
+			Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
@@ -109,7 +95,7 @@ var removeCmd = &cobra.Command {
 			List: toRemove,
 		}, &resp)
 		if err != nil {
-			log.Fatalf("request failed: %v", err)
+			Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")

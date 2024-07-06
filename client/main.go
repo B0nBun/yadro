@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
+	"os"
 	"yadro/client/cmd"
 )
 
-// TODO: I don't really like the package structure and naming, so think about it later
 
 func main() {
 	err := cmd.Execute()
 	if err != nil {
-		log.Fatal(err)
+		// Presumably the error was already printed by cobra, so we just exit
+		os.Exit(1)
 	}
 }

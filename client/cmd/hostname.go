@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/golang/protobuf/ptypes/empty"
-	"yadro/client/service"
 	"yadro/gen/go/proto"
 )
 
@@ -20,20 +18,16 @@ var hostnameCmd = &cobra.Command{
 	Short: "Get hostname of the server",
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		addr, _ := cmd.Flags().GetString("addr")
-		timeout, _ := cmd.Flags().GetDuration("timeout")
-		rest, _ := cmd.Flags().GetBool("rest")
-
-		c, err := service.NewCaller(addr, timeout, rest)
+		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			log.Fatal(err)
+			Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
 		resp := proto.Hostname{}
 		err = c.Call("GetHostname", &empty.Empty{}, &resp)
 		if err != nil {
-			log.Fatalf("request failed: %v", err)
+			Fatalf("request failed: %v", err)
 		}
 		fmt.Println(resp.GetName())
 	},
@@ -44,13 +38,9 @@ var setCmd = &cobra.Command{
 	Short: "Set the hostname on the server",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		addr, _ := cmd.Flags().GetString("addr")
-		timeout, _ := cmd.Flags().GetDuration("timeout")
-		rest, _ := cmd.Flags().GetBool("rest")
-
-		c, err := service.NewCaller(addr, timeout, rest)
+		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			log.Fatal(err)
+			Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
@@ -58,7 +48,7 @@ var setCmd = &cobra.Command{
 		resp := proto.Hostname{}
 		err = c.Call("SetHostname", &proto.Hostname{Name: hostname}, &resp)
 		if err != nil {
-			log.Fatalf("rpc failed: %v", err)
+			Fatalf("rpc failed: %v", err)
 		}
 		fmt.Println(resp.GetName())
 	},
