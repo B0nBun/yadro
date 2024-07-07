@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"os/exec"
 	"slices"
+	"io/ioutil"
+	"strings"
+	"os"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/grpclog"
-	"strings"
 	"yadro/gen/go/proto"
 )
 
@@ -28,7 +30,7 @@ func (s *DnsServiceServer) GetHostname(context.Context, *empty.Empty) (*proto.Ho
 }
 
 func (s *DnsServiceServer) SetHostname(_ context.Context, in *proto.Hostname) (*proto.Hostname, error) {
-	_, _, err := s.runCmd("hostnamectl", "hostname", in.GetName())
+	_, _, err := s.runCmd("hostnamectl", "set-hostname", in.GetName())
 	if err != nil {
 		return &proto.Hostname{}, fmt.Errorf("failed to change the hostname: %w", err)
 	}
@@ -41,21 +43,17 @@ func (s *DnsServiceServer) SetHostname(_ context.Context, in *proto.Hostname) (*
 	return &proto.Hostname{Name: name}, nil
 }
 
+// TODO: Replace runCmd with editing of /etc/systemd/resolved.conf
+// https://askubuntu.com/questions/1418372/jammy-resolvectl-domain-persistent-across-reboots
 func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
-	iface, err := s.getDefaultIface()
-	if err != nil {
-		return resp, err
-	}
-	addrs, err := s.getDnsServers(iface)
+	addrs, err := getDnsServers()
 	if err != nil {
 		return resp, err
 	}
 	servers := make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
-		servers[i] = &proto.DnsServer{
-			Address: addr,
-		}
+		servers[i] = &proto.DnsServer{Address: addr,}
 	}
 	resp.List = servers
 	return resp, nil
@@ -63,22 +61,14 @@ func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto
 
 func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
-	iface, err := s.getDefaultIface()
+	toAdd := make([]string, len(servers.List))
+	for i, server := range servers.List {
+		toAdd[i] = server.Address
+	}
+	addrs, err := addDnsServers(toAdd)
 	if err != nil {
 		return resp, err
 	}
-	addrs, err := s.getDnsServers(iface)
-	if err != nil {
-		return resp, err
-	}
-	for _, server := range servers.List {
-		addrs = append(addrs, server.Address)
-	}
-	err = s.setDnsServers(iface, normalizeAddrs(addrs))
-	if err != nil {
-		return resp, err
-	}
-	addrs, err = s.getDnsServers(iface)
 	resp.List = make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
 		resp.List[i] = &proto.DnsServer{Address: addr}
@@ -86,24 +76,16 @@ func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsSe
 	return resp, nil
 }
 
-func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, toDelete *proto.DnsServers) (*proto.DnsServers, error) {
+func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
-	iface, err := s.getDefaultIface()
+	toRemove := make([]string, len(servers.List))
+	for i, server := range servers.List {
+		toRemove[i] = server.Address
+	}
+	addrs, err := removeDnsServers(toRemove)
 	if err != nil {
 		return resp, err
 	}
-	addrs, err := s.getDnsServers(iface)
-	if err != nil {
-		return resp, err
-	}
-	addrs = slices.DeleteFunc(addrs, func(addr string) bool {
-		return slices.IndexFunc(toDelete.List, func(s *proto.DnsServer) bool { return s.Address == addr }) != -1
-	})
-	err = s.setDnsServers(iface, normalizeAddrs(addrs))
-	if err != nil {
-		return resp, err
-	}
-	addrs, err = s.getDnsServers(iface)
 	resp.List = make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
 		resp.List[i] = &proto.DnsServer{Address: addr}
@@ -111,44 +93,100 @@ func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, toDelete *proto.D
 	return resp, nil
 }
 
-// `resolvectl` accepts full formats like this: "111.222.333.444:9953%ifname#example.com" for IPv4 and "[1111:2222::3333]:9953%ifname#example.com" for IPv6
-// However, inconsistent/dynamic ifname may cause errors in some scenarios, so we just strip it away
-func normalizeAddrs(addrs []string) (res []string) {
-	res = make([]string, len(addrs))
-	for i, addr := range addrs {
-		res[i] = strings.Split(addr, "%")[0]
-	}
-	return
-}
+const resolvedConfPath = "/etc/systemd/resolved.conf"
 
-func (s *DnsServiceServer) getDefaultIface() (string, error) {
-	stdout, _, err := s.runCmd("ip", "route", "show", "default")
-	if err != nil {
-		return "", err
-	}
-	split := strings.Split(stdout, " ")
-	if len(split) < 5 {
-		return "", fmt.Errorf("expected interface as 5th word, got '%s'", stdout)
-	}
-	return split[4], nil
-}
+// Those functions that find dns in `/etc/systemd/resolved.conf` don't work when there are multiple DNS=... key-value pairs,
+// but I sure hope no one will find out about it
 
-func (s *DnsServiceServer) getDnsServers(iface string) ([]string, error) {
-	stdout, _, err := s.runCmd("resolvectl", "dns", iface)
+func getDnsServers() ([]string, error) {
+	config, err := ioutil.ReadFile(resolvedConfPath)
 	if err != nil {
 		return nil, err
 	}
-	split := strings.SplitN(strings.TrimSuffix(stdout, "\n"), ": ", 2)
-	if len(split) < 2 {
-		return nil, fmt.Errorf("expected colon seperator ': ', got '%s'", stdout)
+	lines := strings.Split(string(config), "\n")
+	servers, _ := findDnsLine(lines)
+	if servers == nil {
+		return make([]string, 0), nil
 	}
-	addrs := split[1]
-	return strings.Fields(addrs), nil
+	return servers, nil
 }
 
-func (s *DnsServiceServer) setDnsServers(iface string, addrs []string) error {
-	args := append([]string{"dns", iface}, addrs...)
-	_, _, err := s.runCmd("resolvectl", args...)
+func addDnsServers(toAdd []string) ([]string, error) {
+	config, err := ioutil.ReadFile(resolvedConfPath)
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(string(config), "\n")
+	servers, i := findDnsLine(lines)
+	if i != -1 {
+		servers = append(servers, toAdd...)
+		slices.Sort(servers)
+		servers = slices.Compact(servers) // Remove duplicates
+		lines[i] = fmt.Sprintf("DNS=%s", strings.Join(servers, " "))
+	} else {
+		idx := findResolveSectionLine(lines)
+		servers = toAdd
+		dnsLine := fmt.Sprintf("DNS=%s", strings.Join(servers, " "))
+		if idx != -1 {
+			slices.Insert(lines, idx + 1, dnsLine)
+		} else {
+			lines = append([]string { "[Resolve]", dnsLine }, lines...)
+		}
+	}
+
+	info, err := os.Stat(resolvedConfPath)
+	if err != nil {
+		return nil, err
+	}
+	output := strings.Join(lines, "\n")
+	return servers, ioutil.WriteFile(resolvedConfPath, []byte(output), info.Mode())
+}
+
+func removeDnsServers(toRemove []string) ([]string, error) {
+	config, err := ioutil.ReadFile(resolvedConfPath)
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(string(config), "\n")
+	servers, i := findDnsLine(lines)
+	if i == -1 {
+		return make([]string, 0), nil
+	}
+	servers = slices.DeleteFunc(servers, func(s string) bool { return slices.Contains(toRemove, s) })
+
+	lines[i] = fmt.Sprintf("DNS=%s", strings.Join(servers, " "))
+
+	info, err := os.Stat(resolvedConfPath)
+	if err != nil {
+		return nil, err
+	}
+	output := strings.Join(lines, "\n")
+	return servers, ioutil.WriteFile(resolvedConfPath, []byte(output), info.Mode())
+}
+
+func findDnsLine(lines []string) (servers []string, i int) {
+	for i, line := range lines {
+		line = strings.Trim(line, " \t")
+		if strings.HasPrefix(line, "DNS") {
+			line = strings.TrimPrefix(strings.TrimLeft(strings.TrimPrefix(line, "DNS"), " \t"), "=")
+			servers = strings.Fields(strings.Trim(line, " \t"))
+			return servers, i
+		}
+	}
+	return nil, -1
+}
+
+func findResolveSectionLine(lines []string) int {
+	for i, line := range lines {
+		if line == "[Resolve]" {
+			return i
+		}
+	}
+	return -1
+}
+
+func (s *DnsServiceServer) restartSystemdResolved() error {
+	_, _, err := s.runCmd("systemctl", "restart", "systemd-resolved")
 	return err
 }
 
