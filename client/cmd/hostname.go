@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/spf13/cobra"
 	"yadro/gen/go/proto"
 )
 
@@ -16,7 +16,7 @@ func init() {
 var hostnameCmd = &cobra.Command{
 	Use:   "hostname",
 	Short: "Get hostname of the server",
-	Args: cobra.ExactArgs(0),
+	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
@@ -34,9 +34,9 @@ var hostnameCmd = &cobra.Command{
 }
 
 var setCmd = &cobra.Command{
-	Use: "set [hostname]",
+	Use:   "set [hostname]",
 	Short: "Set the hostname on the server",
-	Args: cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {

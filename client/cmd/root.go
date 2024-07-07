@@ -20,8 +20,8 @@ func init() {
 	rootCmd.PersistentFlags().DurationP("timeout", "t", time.Second, "request timeout")
 }
 
-// We could use Command.PreRun with Command.ExecuteContext(context.Context) to create service.Caller only once, here,
-// but I don't like to diffuse the logic across commands, so I just use the same code in every command (CallerFromFlagSet(...) from "utils")
+// For each command we need a service.Caller, so we could create one here in rootCmd.PreRun, however, I don't like to
+// diffuse the logic across commands, so I think repeating the same CallerFromFlagSet(...) at the start of each Run is better
 func Execute() error {
 	return rootCmd.Execute()
 }

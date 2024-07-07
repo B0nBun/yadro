@@ -2,13 +2,13 @@ package main
 
 import (
 	"bytes"
-	"slices"
 	"context"
 	"fmt"
 	"os/exec"
+	"slices"
 
-	"google.golang.org/grpc/grpclog"
 	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/grpc/grpclog"
 	"strings"
 	"yadro/gen/go/proto"
 )
@@ -41,14 +41,13 @@ func (s *DnsServiceServer) SetHostname(_ context.Context, in *proto.Hostname) (*
 	return &proto.Hostname{Name: name}, nil
 }
 
-
 func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto.DnsServers, error) {
-	resp := &proto.DnsServers{} 
-	iface, err :=  s.getDefaultIface()
+	resp := &proto.DnsServers{}
+	iface, err := s.getDefaultIface()
 	if err != nil {
 		return resp, err
 	}
-	addrs, err :=  s.getDnsServers(iface)
+	addrs, err := s.getDnsServers(iface)
 	if err != nil {
 		return resp, err
 	}
@@ -64,18 +63,18 @@ func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto
 
 func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsServers) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
-	iface, err :=  s.getDefaultIface()
+	iface, err := s.getDefaultIface()
 	if err != nil {
 		return resp, err
 	}
-	addrs, err :=  s.getDnsServers(iface)
+	addrs, err := s.getDnsServers(iface)
 	if err != nil {
 		return resp, err
 	}
 	for _, server := range servers.List {
 		addrs = append(addrs, server.Address)
 	}
-	err =  s.setDnsServers(iface, normalizeAddrs(addrs))
+	err = s.setDnsServers(iface, normalizeAddrs(addrs))
 	if err != nil {
 		return resp, err
 	}
@@ -89,25 +88,25 @@ func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsSe
 
 func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, toDelete *proto.DnsServers) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
-	iface, err :=  s.getDefaultIface()
+	iface, err := s.getDefaultIface()
 	if err != nil {
 		return resp, err
 	}
-	addrs, err :=  s.getDnsServers(iface)
+	addrs, err := s.getDnsServers(iface)
 	if err != nil {
 		return resp, err
 	}
-	addrs = slices.DeleteFunc(addrs, func (addr string) bool {
-		return slices.IndexFunc(toDelete.List, func (s *proto.DnsServer) bool { return s.Address == addr }) != -1
+	addrs = slices.DeleteFunc(addrs, func(addr string) bool {
+		return slices.IndexFunc(toDelete.List, func(s *proto.DnsServer) bool { return s.Address == addr }) != -1
 	})
-	err =  s.setDnsServers(iface, normalizeAddrs(addrs))
+	err = s.setDnsServers(iface, normalizeAddrs(addrs))
 	if err != nil {
 		return resp, err
 	}
 	addrs, err = s.getDnsServers(iface)
 	resp.List = make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
-		resp.List[i] = &proto.DnsServer{ Address: addr }
+		resp.List[i] = &proto.DnsServer{Address: addr}
 	}
 	return resp, nil
 }
@@ -148,7 +147,7 @@ func (s *DnsServiceServer) getDnsServers(iface string) ([]string, error) {
 }
 
 func (s *DnsServiceServer) setDnsServers(iface string, addrs []string) error {
-	args := append([]string { "dns", iface }, addrs...)
+	args := append([]string{"dns", iface}, addrs...)
 	_, _, err := s.runCmd("resolvectl", args...)
 	return err
 }

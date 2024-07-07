@@ -4,19 +4,17 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"strings"
-	"slices"
 	"log"
 	"net"
 	"os"
+	"slices"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"yadro/gen/go/proto"
 )
-
-// TODO: Actual task with DNS and stuff
 
 func main() {
 	err := rootCmd.Execute()
@@ -114,9 +112,9 @@ func makeDnsUnmanaged() error {
 	if mainLine == -1 && dnsLine != -1 {
 		return fmt.Errorf("failed to parse: found dns key-value pair, but not [main] section")
 	}
-	
+
 	if mainLine == -1 {
-		lines = append([]string { "[main]", "dns=none" }, lines...)
+		lines = append([]string{"[main]", "dns=none"}, lines...)
 	} else if dnsLine == -1 {
 		lines = slices.Insert(lines, mainLine+1, "dns=none")
 	} else {

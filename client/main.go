@@ -5,7 +5,6 @@ import (
 	"yadro/client/cmd"
 )
 
-
 func main() {
 	err := cmd.Execute()
 	if err != nil {

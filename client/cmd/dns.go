@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/spf13/cobra"
 	"yadro/gen/go/proto"
 )
 
@@ -15,9 +15,9 @@ func init() {
 }
 
 var dnsCmd = &cobra.Command{
-	Use: "dns",
+	Use:   "dns",
 	Short: "Control dns-server list of the server",
-	Args: cobra.ExactArgs(0),
+	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := CallerFromFlagSet(cmd.Flags())
 		if err != nil {
@@ -40,14 +40,14 @@ var dnsCmd = &cobra.Command{
 	},
 }
 
-var addCmd = &cobra.Command {
-	Use: "add [dns-addrs...]",
+var addCmd = &cobra.Command{
+	Use:   "add [dns-addrs...]",
 	Short: "Add dns servers remotely",
-	Args: cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		toAdd := make([]*proto.DnsServer, 0, len(args))
 		for _, addr := range args {
-			toAdd = append(toAdd, &proto.DnsServer{ Address: addr })
+			toAdd = append(toAdd, &proto.DnsServer{Address: addr})
 		}
 
 		c, err := CallerFromFlagSet(cmd.Flags())
@@ -73,14 +73,14 @@ var addCmd = &cobra.Command {
 	},
 }
 
-var removeCmd = &cobra.Command {
-	Use: "remove [dns-addrs...]",
+var removeCmd = &cobra.Command{
+	Use:   "remove [dns-addrs...]",
 	Short: "Remove dns servers remotely",
-	Args: cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		toRemove := make([]*proto.DnsServer, 0, len(args))
 		for _, addr := range args {
-			toRemove = append(toRemove, &proto.DnsServer{ Address: addr })
+			toRemove = append(toRemove, &proto.DnsServer{Address: addr})
 		}
 
 		c, err := CallerFromFlagSet(cmd.Flags())
