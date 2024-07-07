@@ -5,6 +5,8 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/spf13/cobra"
+
+	"yadro/client/internal"
 	"yadro/gen/go/proto"
 )
 
@@ -19,16 +21,16 @@ var dnsCmd = &cobra.Command{
 	Short: "Control dns-server list of the server",
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := CallerFromFlagSet(cmd.Flags())
+		c, err := internal.CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			Fatalf("%v", err)
+			internal.Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
 		resp := proto.DnsServers{}
 		err = c.Call("ListDnsServers", &empty.Empty{}, &resp)
 		if err != nil {
-			Fatalf("request failed: %v", err)
+			internal.Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")
@@ -50,9 +52,9 @@ var addCmd = &cobra.Command{
 			toAdd = append(toAdd, &proto.DnsServer{Address: addr})
 		}
 
-		c, err := CallerFromFlagSet(cmd.Flags())
+		c, err := internal.CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			Fatalf("%v", err)
+			internal.Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
@@ -61,7 +63,7 @@ var addCmd = &cobra.Command{
 			List: toAdd,
 		}, &resp)
 		if err != nil {
-			Fatalf("request failed: %v", err)
+			internal.Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")
@@ -83,9 +85,9 @@ var removeCmd = &cobra.Command{
 			toRemove = append(toRemove, &proto.DnsServer{Address: addr})
 		}
 
-		c, err := CallerFromFlagSet(cmd.Flags())
+		c, err := internal.CallerFromFlagSet(cmd.Flags())
 		if err != nil {
-			Fatalf("%v", err)
+			internal.Fatalf("%v", err)
 		}
 		defer c.Cleanup()
 
@@ -94,7 +96,7 @@ var removeCmd = &cobra.Command{
 			List: toRemove,
 		}, &resp)
 		if err != nil {
-			Fatalf("request failed: %v", err)
+			internal.Fatalf("request failed: %v", err)
 		}
 		if len(resp.List) == 0 {
 			fmt.Println("No DNS servers")

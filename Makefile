@@ -1,5 +1,5 @@
 # Building out the dependencies is too cumbersome, so everything is a PHONY target
-.PHONY: all server client proto
+.PHONY: all server client proto format
 
 PROTO_IMPORT_DIR=./proto
 PROTO_SERVICE=./proto/dns_service.proto
@@ -7,13 +7,17 @@ PROTO_SERVICE=./proto/dns_service.proto
 PROTO_GEN_PATH=./gen/go/proto
 OPENAPI_GEN_PATH=./gen/openapiv2
 
-all: proto server client;
+all: proto format server client;
 
 server:
 	go build -o server.out ./server
 
 client:
 	go build -o client.out ./client
+
+format:
+	gofmt -s -w .
+	goimports -w -local yadro .
 
 proto:
 	mkdir -p $(PROTO_GEN_PATH)

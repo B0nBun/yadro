@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+
 	"yadro/gen/go/proto"
 )
 

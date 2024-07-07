@@ -1,10 +1,11 @@
-package cmd
+package internal
 
 import (
 	"fmt"
 	"os"
 
 	"github.com/spf13/pflag"
+
 	"yadro/client/service"
 )
 

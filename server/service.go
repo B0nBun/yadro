@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"slices"
-	"io/ioutil"
 	"strings"
-	"os"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/grpclog"
+
 	"yadro/gen/go/proto"
 )
 
@@ -43,8 +44,6 @@ func (s *DnsServiceServer) SetHostname(_ context.Context, in *proto.Hostname) (*
 	return &proto.Hostname{Name: name}, nil
 }
 
-// TODO: Replace runCmd with editing of /etc/systemd/resolved.conf
-// https://askubuntu.com/questions/1418372/jammy-resolvectl-domain-persistent-across-reboots
 func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto.DnsServers, error) {
 	resp := &proto.DnsServers{}
 	addrs, err := getDnsServers()
@@ -53,7 +52,7 @@ func (s *DnsServiceServer) ListDnsServers(context.Context, *empty.Empty) (*proto
 	}
 	servers := make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
-		servers[i] = &proto.DnsServer{Address: addr,}
+		servers[i] = &proto.DnsServer{Address: addr}
 	}
 	resp.List = servers
 	return resp, nil
@@ -136,9 +135,9 @@ func addDnsServers(toAdd []string) ([]string, error) {
 		servers = toAdd
 		dnsLine := fmt.Sprintf("DNS=%s", strings.Join(servers, " "))
 		if idx != -1 {
-			slices.Insert(lines, idx + 1, dnsLine)
+			slices.Insert(lines, idx+1, dnsLine)
 		} else {
-			lines = append([]string { "[Resolve]", dnsLine }, lines...)
+			lines = append([]string{"[Resolve]", dnsLine}, lines...)
 		}
 	}
 
