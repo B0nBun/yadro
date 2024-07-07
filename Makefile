@@ -1,5 +1,5 @@
 # Building out the dependencies is too cumbersome, so everything is a PHONY target
-.PHONY: all server client proto format
+.PHONY: all server client server-docker client-docker proto format
 
 PROTO_IMPORT_DIR=./proto
 PROTO_SERVICE=./proto/dns_service.proto
@@ -10,10 +10,10 @@ OPENAPI_GEN_PATH=./gen/openapiv2
 all: proto format server client;
 
 server:
-	go build -o server.out ./server
+	go build -C server -o ../bin/server -trimpath
 
 client:
-	go build -o client.out ./client
+	go build -C client -o ../bin/client -trimpath
 
 format:
 	gofmt -s -w .
