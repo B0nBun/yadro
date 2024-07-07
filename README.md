@@ -49,7 +49,7 @@ sudo ./server.out --grpc-port 1212
 
 ### Клиент
 ```sh
-./client.out --addr 0.0.0.0:1234 hostname                   # Получит имя хоста
+./client.out --addr 0.0.0.0:1234 hostname                   # Получить имя хоста
 ./client.out --addr 0.0.0.0:1234 hostname set new-hotname   # Изменить имя хоста
 ./client.out --addr 0.0.0.0:1234 dns                        # Получить список DNS серверов
 ./client.out --addr 0.0.0.0:1234 dns add 1.1.1.1 8.8.8.8    # Добавить DNS сервера
