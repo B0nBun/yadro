@@ -23,17 +23,17 @@ Makefile содержит необходимые скрипты
 make server client
 ```
 
-Компиляция производит два исполняемых файла: `client.out` и `server.out`.
+Компиляция производит два исполняемых файла: `bin/client` и `bin/server`.
 
 ## Использование
 
 ### Сервер
 
-Для изменения DNS серверов редактируется файл `/etc/systemd/resolved.conf`, а также перезагружается `systemd-resolved`, в связи с чем в примере `server.out` запускается через `sudo`
+Для изменения DNS серверов редактируется файл `/etc/systemd/resolved.conf`, а также перезагружается `systemd-resolved`, в связи с чем в примере `bin/server` запускается через `sudo`
 
 ```sh
 # Запустить gRPC сервер на порте 1212 (по умолчанию 1234)
-sudo ./server.out --grpc-port 1212
+sudo bin/server --grpc-port 1212
 
 # Другие флаги:
 # --rest-port  Порт на котором будет запущен REST http-gateway
@@ -48,11 +48,11 @@ sudo ./server.out --grpc-port 1212
 
 ### Клиент
 ```sh
-./client.out --addr 0.0.0.0:1234 hostname                   # Получить имя хоста
-./client.out --addr 0.0.0.0:1234 hostname set new-hotname   # Изменить имя хоста
-./client.out --addr 0.0.0.0:1234 dns                        # Получить список DNS серверов
-./client.out --addr 0.0.0.0:1234 dns add 1.1.1.1 8.8.8.8    # Добавить DNS сервера
-./client.out --addr 0.0.0.0:1234 dns remove 1.1.1.1 8.8.8.8 # Удалить DNS сервера
+bin/client --addr 0.0.0.0:1234 hostname                   # Получить имя хоста
+bin/client --addr 0.0.0.0:1234 hostname set new-hotname   # Изменить имя хоста
+bin/client --addr 0.0.0.0:1234 dns                        # Получить список DNS серверов
+bin/client --addr 0.0.0.0:1234 dns add 1.1.1.1 8.8.8.8    # Добавить DNS сервера
+bin/client --addr 0.0.0.0:1234 dns remove 1.1.1.1 8.8.8.8 # Удалить DNS сервера
 # Другие флаги
 # --rest     Клиент отправляет REST запросы вместо gRPC
 # --timeout  Выставляет timeout на запросы (по умолчанию 1 секунда)
