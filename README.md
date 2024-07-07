@@ -29,17 +29,23 @@ make server client
 
 ### Сервер
 
-Для работы серверу необходимы права на редактирование `/etc/NetworkManager/NetworkManager.conf` (если не указаен флаг `--debug-dns`), а также на изменение dns списка через `resolvectl dns`, поэтому в примере используется `sudo`
+Для работы серверу необходимы права на редактирование `/etc/NetworkManager/NetworkManager.conf` (если не указаен флаг `--temp-dns`), а также на изменение dns списка через `resolvectl dns`, поэтому в примере используется `sudo`
 
 ```sh
-# Запустить сервер. gRPC и REST будут располагаться на портах 1212 и 2323 соответственно
-sudo ./server.out --grpc-port 1212 --rest-port 2323
+# Запустить gRPC сервер на порте 1212 (по умолчанию 1234)
+sudo ./server.out --grpc-port 1212
 
 # Другие флаги:
+# --rest-port  Порт на котором будет запущен REST http-gateway
 # --grpc-logs  Выводит также логи самой библиотеки grpc
-# --debug-dns  Сервер не пытается добавить `dns=none` в NetworkManager.conf (изменения DNS списков будут временные)
+# --temp-dns   Сервер не пытается добавить `dns=none` в NetworkManager.conf (изменения DNS списков будут временные)
 # --help       Больше информации о CLI
 ```
+
+При запуске сервера вместе с REST gateway через флаг `--rest-port` на указанном порту будет запущен сервер с API сгенерированным через grpc-gateway.
+
+- `localhost:xxxx/api/*` - API эндпоинты
+- `localhost:xxxx/` - Swagger документация API 
 
 ### Клиент
 ```sh

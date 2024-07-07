@@ -19,7 +19,7 @@
     "/api/dns-servers": {
       "get": {
         "summary": "Get a list of dns servers used by the callee",
-        "description": "TODO",
+        "description": "Gets the server's list of dns servers for the default interface with `resolvectl dns`",
         "operationId": "DnsService_ListDnsServers",
         "responses": {
           "200": {
@@ -41,7 +41,7 @@
       },
       "post": {
         "summary": "Add dns servers to the list used by the callee",
-        "description": "TODO",
+        "description": "Adds new dns server's to the callee's default interface via `resolvectl dns`",
         "operationId": "DnsService_AddDnsServers",
         "responses": {
           "200": {
@@ -75,7 +75,7 @@
     "/api/dns-servers/delete": {
       "put": {
         "summary": "Remove the specified dns servers from callee's list",
-        "description": "TODO",
+        "description": "Removes dns servers from the callee's default interface via `resolvectl dns`",
         "operationId": "DnsService_RemoveDnsServers",
         "responses": {
           "200": {
@@ -168,8 +168,7 @@
       "type": "object",
       "properties": {
         "address": {
-          "type": "string",
-          "title": "TODO: Use 'address' instead of 'ip' everywhere for consistency"
+          "type": "string"
         }
       }
     },

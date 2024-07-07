@@ -30,16 +30,16 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().UintP("rest-port", "r", 1234, "port used for the REST http-server")
-	rootCmd.Flags().UintP("grpc-port", "g", 1235, "port used for the grpc server")
-	rootCmd.Flags().BoolP("debug-dns", "d", false, "if set to true, server doesn't set 'dns=none' in NetworkManager.conf")
+	rootCmd.Flags().UintP("rest-port", "r", 0, "port used for the REST http-gateway (Gateway doesn't run if the port is not specified)")
+	rootCmd.Flags().UintP("grpc-port", "g", 1234, "port used for the grpc server")
+	rootCmd.Flags().BoolP("temp-dns", "d", false, "if set to true, server doesn't set 'dns=none' in NetworkManager.conf")
 	rootCmd.Flags().BoolP("grpc-logs", "l", false, "if set to true, prints the grpc library logs to stdout")
 }
 
 func runServer(cmd *cobra.Command, _args []string) {
 	grpcPort, _ := cmd.Flags().GetUint("grpc-port")
 	restPort, _ := cmd.Flags().GetUint("rest-port")
-	debugDns, _ := cmd.Flags().GetBool("debug-dns")
+	debugDns, _ := cmd.Flags().GetBool("temp-dns")
 	grpcLogs, _ := cmd.Flags().GetBool("grpc-logs")
 
 	log := grpclog.NewLoggerV2(os.Stdout, io.Discard, io.Discard)
@@ -54,7 +54,7 @@ func runServer(cmd *cobra.Command, _args []string) {
 		}
 		log.Info("set 'dns=none' in NetworkManager.conf")
 	} else {
-		log.Warning("ran with debug-dns. Dns changes will not be permanent")
+		log.Warning("ran with temp-dns. Dns changes will not be permanent")
 	}
 
 	addr := fmt.Sprintf("0.0.0.0:%d", grpcPort)
@@ -69,19 +69,22 @@ func runServer(cmd *cobra.Command, _args []string) {
 		Log: log,
 	})
 
-	log.Infof("serving gRPC on http://%s", addr)
 	go func() {
+		log.Infof("serving gRPC on http://%s", addr)
 		log.Fatal(s.Serve(lis))
 	}()
 
-	restAddr := fmt.Sprintf("0.0.0.0:%d", restPort)
-	rpcAddr := "dns:///" + addr
-	log.Infof("serving REST on http://%s", restAddr)
-	err = GatewayRun(restAddr, rpcAddr)
-
-	if err != nil {
-		log.Fatal(err)
+	if restPort != 0 {
+		restAddr := fmt.Sprintf("0.0.0.0:%d", restPort)
+		rpcAddr := "dns:///" + addr
+		go func() {
+			log.Infof("serving REST on http://%s", restAddr)
+			log.Fatal(GatewayRun(restAddr, rpcAddr))
+		}()
 	}
+
+	// Sleep forever, until the gateway or gRPC server quits with log.Fatal
+	<-make(chan struct{})
 }
 
 // Sets the DNS (resolv.conf) processing mode to none
