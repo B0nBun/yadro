@@ -35,20 +35,19 @@ var dnsCmd = &cobra.Command{
 			return
 		}
 		for _, server := range resp.List {
-			fmt.Println(server.Ip)
+			fmt.Println(server.Address)
 		}
 	},
 }
 
-// TODO: Parse IP to validate it (net.ParseIP)
 var addCmd = &cobra.Command {
-	Use: "add [dns-ips...]",
+	Use: "add [dns-addrs...]",
 	Short: "Add dns servers remotely",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		toAdd := make([]*proto.DnsServer, 0, len(args))
-		for _, ip := range args {
-			toAdd = append(toAdd, &proto.DnsServer{ Ip: ip })
+		for _, addr := range args {
+			toAdd = append(toAdd, &proto.DnsServer{ Address: addr })
 		}
 
 		c, err := CallerFromFlagSet(cmd.Flags())
@@ -69,19 +68,19 @@ var addCmd = &cobra.Command {
 			return
 		}
 		for _, server := range resp.List {
-			fmt.Println(server.Ip)
+			fmt.Println(server.Address)
 		}
 	},
 }
 
 var removeCmd = &cobra.Command {
-	Use: "remove [dns-ips...]",
+	Use: "remove [dns-addrs...]",
 	Short: "Remove dns servers remotely",
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		toRemove := make([]*proto.DnsServer, 0, len(args))
-		for _, ip := range args {
-			toRemove = append(toRemove, &proto.DnsServer{ Ip: ip })
+		for _, addr := range args {
+			toRemove = append(toRemove, &proto.DnsServer{ Address: addr })
 		}
 
 		c, err := CallerFromFlagSet(cmd.Flags())
@@ -102,7 +101,7 @@ var removeCmd = &cobra.Command {
 			return
 		}
 		for _, server := range resp.List {
-			fmt.Println(server.Ip)
+			fmt.Println(server.Address)
 		}
 	},
 }

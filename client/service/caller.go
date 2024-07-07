@@ -134,9 +134,9 @@ func rpcToRest(rpcMethod string) (method string, url string) {
 		return "POST", "/api/hostname"
 	case "ListDnsServers":
 		return "GET", "/api/dns-servers"
-	case "AddDnsServer":
+	case "AddDnsServers":
 		return "POST", "/api/dns-servers"
-	case "RemoveDnsServer":
+	case "RemoveDnsServers":
 		return "PUT", "/api/dns-servers/delete"
 	default:
 		panic(fmt.Sprintf("Got unexpected rpc method '%v'", rpcMethod))

@@ -167,9 +167,9 @@
     "dns_serviceDnsServer": {
       "type": "object",
       "properties": {
-        "ip": {
+        "address": {
           "type": "string",
-          "title": "TODO: Maybe choose some other type"
+          "title": "TODO: Use 'address' instead of 'ip' everywhere for consistency"
         }
       }
     },

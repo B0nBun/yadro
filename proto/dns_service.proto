@@ -11,7 +11,7 @@ message Hostname {
 }
 
 message DnsServer {
-    string ip = 1; // TODO: Maybe choose some other type
+    string address = 1; // TODO: Use 'address' instead of 'ip' everywhere for consistency
 }
 
 message DnsServers {
