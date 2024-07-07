@@ -69,6 +69,10 @@ func (s *DnsServiceServer) AddDnsServers(_ context.Context, servers *proto.DnsSe
 	if err != nil {
 		return resp, err
 	}
+	err = s.restartSystemdResolved()
+	if err != nil {
+		return resp, err
+	}
 	resp.List = make([]*proto.DnsServer, len(addrs))
 	for i, addr := range addrs {
 		resp.List[i] = &proto.DnsServer{Address: addr}
@@ -83,6 +87,10 @@ func (s *DnsServiceServer) RemoveDnsServers(_ context.Context, servers *proto.Dn
 		toRemove[i] = server.Address
 	}
 	addrs, err := removeDnsServers(toRemove)
+	if err != nil {
+		return resp, err
+	}
+	err = s.restartSystemdResolved()
 	if err != nil {
 		return resp, err
 	}
