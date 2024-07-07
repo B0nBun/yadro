@@ -29,6 +29,8 @@ make server client
 
 ### Сервер
 
+Для работы серверу необходимы права на редактирование `/etc/NetworkManager/NetworkManager.conf` (если не указаен флаг `--debug-dns`), а также на изменение dns списка через `resolvectl dns`, поэтому в примере используется `sudo`
+
 ```sh
 # Запустить сервер. gRPC и REST будут располагаться на портах 1212 и 2323 соответственно
 sudo ./server.out --grpc-port 1212 --rest-port 2323
@@ -39,8 +41,6 @@ sudo ./server.out --grpc-port 1212 --rest-port 2323
 # --help       Больше информации о CLI
 ```
 
-Для работы серверу необходимы права на редактирование `/etc/NetworkManager/NetworkManager.conf` (если не указаен флаг --debug-dns), а также на изменение dns списка через `resolvectl dns`.
-
 ### Клиент
 ```sh
 ./client.out --addr 0.0.0.0:1234 hostname                   # Получит имя хоста
@@ -48,7 +48,9 @@ sudo ./server.out --grpc-port 1212 --rest-port 2323
 ./client.out --addr 0.0.0.0:1234 dns                        # Получить список DNS серверов
 ./client.out --addr 0.0.0.0:1234 dns add 1.1.1.1 8.8.8.8    # Добавить DNS сервера
 ./client.out --addr 0.0.0.0:1234 dns remove 1.1.1.1 8.8.8.8 # Удалить DNS сервера
-# Все команды принимают флаг --help для большей информации
+# Другие флаги
+# --rest     Клиент отправляет REST запросы вместо gRPC
+# --timeout  Выставляет timeout на запросы (по умолчанию 1 секунда)
 ```
 
 ## Детали имплементации
