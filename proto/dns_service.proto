@@ -11,7 +11,7 @@ message Hostname {
 }
 
 message DnsServer {
-    string address = 1; // TODO: Use 'address' instead of 'ip' everywhere for consistency
+    string address = 1;
 }
 
 message DnsServers {
@@ -46,7 +46,7 @@ service DnsService {
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get a list of dns servers used by the callee"
-            description: "TODO"
+            description: "Gets the server's list of dns servers for the default interface with `resolvectl dns`"
         };
     }
 
@@ -57,7 +57,7 @@ service DnsService {
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Add dns servers to the list used by the callee"
-            description: "TODO"
+            description: "Adds new dns server's to the callee's default interface via `resolvectl dns`"
         };
     }
 
@@ -70,7 +70,7 @@ service DnsService {
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Remove the specified dns servers from callee's list"
-            description: "TODO"
+            description: "Removes dns servers from the callee's default interface via `resolvectl dns`"
         };
     }
 }
